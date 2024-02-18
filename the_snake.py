@@ -53,7 +53,57 @@ class GameObject:
 
 
 class Snake(GameObject):
-    pass
+    def __init__(self, body_color, positions=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))):
+        super().__init__(body_color)
+        self.lenght = 1
+        self.positions = [positions]
+        self.direction = RIGHT
+        self.next_direction = None
+        self.last = None
+    
+    def update_direction(self):
+        if self.next_direction:
+             self.direction = self.next_direction
+             self.next_direction = None
+    
+    def move(self):
+        self.head_position = self.get_head_position()
+        self.new_head_position = ((self.head_position[0] + self.direction[0] * GRID_SIZE) % SCREEN_WIDTH,
+                                  (self.head_position[1] + self.direction[1] * GRID_SIZE) % SCREEN_HEIGHT)
+        if self.new_head_position in self.position[1:]:
+            self.reset()
+        if len(self.positions)>self.lenght:
+            self.last = self.positions.pop()
+        else:
+            self.positions.insert(0, self.new_head_position)
+
+    def get_head_position(self):
+        return self.positions[0]
+
+    def reset(self):
+        pass
+
+    # Метод draw класса Snake
+    def draw(self, surface):
+        for position in self.positions[:-1]:
+            rect = (
+                pygame.Rect((position[0], position[1]), (GRID_SIZE, GRID_SIZE))
+            )
+            pygame.draw.rect(surface, self.body_color, rect)
+            pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
+
+     # Отрисовка головы змейки
+        head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(surface, self.body_color, head_rect)
+        pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
+
+     # Затирание последнего сегмента
+        if self.last:
+            last_rect = pygame.Rect(
+                (self.last[0], self.last[1]),
+                (GRID_SIZE, GRID_SIZE)
+            )
+            pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, last_rect)
 
 
 class Apple(GameObject):
@@ -80,6 +130,8 @@ def main():
     # Тут нужно создать экземпляры классов.
     apple = Apple(APPLE_COLOR)
     apple.draw(screen)
+    snake = Snake(SNAKE_COLOR)
+    snake.draw(screen)
     while True:
         clock.tick(SPEED)
 
