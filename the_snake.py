@@ -2,8 +2,6 @@ from random import choice, randint
 
 import pygame as pg
 
-pg.init()
-
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
 GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
@@ -63,11 +61,9 @@ class GameObject:
 class Snake(GameObject):
     """Описание класса змейка"""
 
-    def __init__(self, body_color=SNAKE_COLOR,
-                 position=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))):
+    def __init__(self, body_color=SNAKE_COLOR):
         super().__init__(body_color)
         self.length = 1
-        self.position = position
         self.positions = [self.position]
         self.direction = RIGHT
         self.next_direction = None
@@ -81,18 +77,18 @@ class Snake(GameObject):
 
     def move(self):
         """Обновление позиции змейки"""
-        self.head_position = self.get_head_position()
-        self.new_head_position = ((self.head_position[0] + self.direction[0]
-                                  * GRID_SIZE) % SCREEN_WIDTH,
-                                  (self.head_position[1] + self.direction[1]
-                                  * GRID_SIZE) % SCREEN_HEIGHT)
-        if self.new_head_position in self.positions:
+        head_position = self.get_head_position()
+        new_head_position = ((head_position[0] + self.direction[0]
+                              * GRID_SIZE) % SCREEN_WIDTH,
+                             (head_position[1] + self.direction[1]
+                             * GRID_SIZE) % SCREEN_HEIGHT)
+        if new_head_position in self.positions:
             self.reset()
             return
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
         else:
-            self.positions.insert(0, self.new_head_position)
+            self.positions.insert(0, new_head_position)
 
     def get_head_position(self):
         """Обновление положения головы змейки"""
@@ -101,7 +97,6 @@ class Snake(GameObject):
     def reset(self):
         """Сброс змейки в начальное положение"""
         self.length = 1
-        self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
         self.positions = [self.position]
         self.direction = choice([UP, DOWN, RIGHT, LEFT])
 
@@ -158,16 +153,17 @@ def main():
     while True:
         clock.tick(SPEED)
         handle_keys(snake)
+        snake.update_direction()
+        snake.move()
         if snake.get_head_position() == apple.position:
             apple.randomize_position()
             snake.length += 1
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw(screen)
         snake.draw(screen)
-        snake.move()
-        snake.update_direction()
         pg.display.update()
 
 
 if __name__ == '__main__':
     main()
+    pg.init()
