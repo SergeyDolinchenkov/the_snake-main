@@ -22,6 +22,8 @@ SNAKE_COLOR = (0, 255, 0)
 
 SPEED = 20
 
+screen_centre = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 
 pg.display.set_caption('Змейка')
@@ -49,9 +51,11 @@ def handle_keys(game_object):
 class GameObject:
     """Создаем базовый класс"""
 
-    def __init__(self, body_color=BOARD_BACKGROUND_COLOR):
-        self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+    def __init__(self, body_color=BOARD_BACKGROUND_COLOR,
+                 border_color=BORDER_COLOR):
+        self.position = screen_centre
         self.body_color = body_color
+        self.border_color = border_color
 
     def draw(self):
         """Заглушка метода рисования"""
@@ -61,8 +65,8 @@ class GameObject:
 class Snake(GameObject):
     """Описание класса змейка"""
 
-    def __init__(self, body_color=SNAKE_COLOR):
-        super().__init__(body_color)
+    def __init__(self, body_color=SNAKE_COLOR, border_color=BORDER_COLOR):
+        super().__init__(body_color, border_color)
         self.length = 1
         self.positions = [self.position]
         self.direction = RIGHT
@@ -107,11 +111,11 @@ class Snake(GameObject):
                 pg.Rect((position[0], position[1]), (GRID_SIZE, GRID_SIZE))
             )
             pg.draw.rect(surface, self.body_color, rect)
-            pg.draw.rect(surface, BORDER_COLOR, rect, 1)
+            pg.draw.rect(surface, self.border_color, rect, 1)
 
         head_rect = pg.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
         pg.draw.rect(surface, self.body_color, head_rect)
-        pg.draw.rect(surface, BORDER_COLOR, head_rect, 1)
+        pg.draw.rect(surface, self.border_color, head_rect, 1)
 
         if self.last:
             last_rect = pg.Rect(
@@ -124,8 +128,8 @@ class Snake(GameObject):
 class Apple(GameObject):
     """Описание класса яблоко"""
 
-    def __init__(self, body_color=APPLE_COLOR):
-        super().__init__(body_color)
+    def __init__(self, body_color=APPLE_COLOR, border_color=BORDER_COLOR):
+        super().__init__(body_color, border_color)
         self.position = self.randomize_position()
 
     def randomize_position(self):
@@ -143,7 +147,7 @@ class Apple(GameObject):
             (GRID_SIZE, GRID_SIZE)
         )
         pg.draw.rect(surface, self.body_color, rect)
-        pg.draw.rect(surface, BORDER_COLOR, rect, 1)
+        pg.draw.rect(surface, self.border_color, rect, 1)
 
 
 def main():
