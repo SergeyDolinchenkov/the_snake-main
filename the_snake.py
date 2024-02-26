@@ -89,9 +89,6 @@ class Snake(GameObject):
                               * GRID_SIZE) % SCREEN_WIDTH,
                              (head_position[1] + self.direction[1]
                              * GRID_SIZE) % SCREEN_HEIGHT)
-        if new_head_position in self.positions:
-            self.reset()
-            return
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
         else:
@@ -166,6 +163,8 @@ def main():
         if snake.get_head_position() == apple.position:
             apple.randomize_position(snake.positions)
             snake.length += 1
+        if snake.positions[0] in snake.positions[2:]:
+            snake.reset()
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw(screen)
         snake.draw(screen)
