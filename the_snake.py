@@ -46,6 +46,9 @@ def handle_keys(game_object):
                 game_object.next_direction = LEFT
             elif event.key == pg.K_RIGHT and game_object.direction != LEFT:
                 game_object.next_direction = RIGHT
+            elif event.key == pg.K_ESCAPE:
+                pg.quit()
+                raise SystemExit
 
 
 class GameObject:
@@ -132,12 +135,13 @@ class Apple(GameObject):
         super().__init__(body_color, border_color)
         self.position = self.randomize_position()
 
-    def randomize_position(self):
+    def randomize_position(self, occupied_positions=[screen_centre]):
         """Получение случайного местоположения на игровом поле"""
-        self.position = (
-            randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-            randint(0, GRID_HEIGHT - 1) * GRID_SIZE,
-        )
+        while self.position in occupied_positions:
+            self.position = (
+                randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                randint(0, GRID_HEIGHT - 1) * GRID_SIZE,
+            )
         return self.position
 
     def draw(self, surface):
@@ -160,7 +164,7 @@ def main():
         snake.update_direction()
         snake.move()
         if snake.get_head_position() == apple.position:
-            apple.randomize_position()
+            apple.randomize_position(snake.positions)
             snake.length += 1
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw(screen)
