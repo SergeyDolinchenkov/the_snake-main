@@ -22,7 +22,7 @@ SNAKE_COLOR = (0, 255, 0)
 
 SPEED = 20
 
-screen_centre = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+SCREEN_CENTRE = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 
@@ -56,7 +56,7 @@ class GameObject:
 
     def __init__(self, body_color=BOARD_BACKGROUND_COLOR,
                  border_color=BORDER_COLOR):
-        self.position = screen_centre
+        self.position = SCREEN_CENTRE
         self.body_color = body_color
         self.border_color = border_color
 
@@ -132,7 +132,7 @@ class Apple(GameObject):
         super().__init__(body_color, border_color)
         self.position = self.randomize_position()
 
-    def randomize_position(self, occupied_positions=[screen_centre]):
+    def randomize_position(self, occupied_positions=[SCREEN_CENTRE]):
         """Получение случайного местоположения на игровом поле"""
         while self.position in occupied_positions:
             self.position = (
@@ -163,7 +163,7 @@ def main():
         if snake.get_head_position() == apple.position:
             apple.randomize_position(snake.positions)
             snake.length += 1
-        if snake.positions[0] in snake.positions[2:]:
+        if snake.get_head_position() in snake.positions[2:]:
             snake.reset()
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw(screen)
